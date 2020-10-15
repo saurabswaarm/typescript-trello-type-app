@@ -1,0 +1,21 @@
+{
+  "name": "learning-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "lite-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lite-server": "^2.5.4"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.161",
+    "commonjs": "0.0.1",
+    "lodash": "^4.17.20"
+  }
+}

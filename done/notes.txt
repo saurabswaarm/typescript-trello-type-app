@@ -1,0 +1,8 @@
+//string, number, boolean
+//alias, literal, union types
+//object types
+//function types, setting return types, typeof a funtion
+//enum
+//tupple type
+//array types
+//unkown and never types
