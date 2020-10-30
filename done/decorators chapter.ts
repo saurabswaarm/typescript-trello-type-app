@@ -58,7 +58,7 @@
 //     public title:string;
 //     private currency:string = "Rs";
 //     private _price:number;
-    
+
 //     constructor(t:string,p:number){
 //         this.title = t;
 //         this._price = p;
@@ -167,77 +167,77 @@
 
 
 type MinLengthX = {
-    minLength:number;
+    minLength: number;
 }
 
 interface ValidatorObject {
-    [relevantClass:string]:{
-        [propertyName:string]:(string | Partial<MinLengthX>)[]
+    [relevantClass: string]: {
+        [propertyName: string]: (string | Partial<MinLengthX>)[]
     }
 }
 
-let validatorObject:ValidatorObject = {};
+let validatorObject: ValidatorObject = {};
 
-function flagInjector(className:string, propertyName:string, flag:string | object){
+function flagInjector(className: string, propertyName: string, flag: string | object) {
 
     let existingFlags;
-    if(validatorObject[className]){
-        existingFlags = validatorObject[className][propertyName] 
+    if (validatorObject[className]) {
+        existingFlags = validatorObject[className][propertyName]
     }
 
-    validatorObject[className]={
+    validatorObject[className] = {
         ...validatorObject[className],
-        [propertyName]:existingFlags ? [...existingFlags, flag] : [flag]
+        [propertyName]: existingFlags ? [...existingFlags, flag] : [flag]
     };
 }
 
-function Require(target:any, propertyName:string){
+function Require(target: any, propertyName: string) {
     flagInjector(target.constructor.name, propertyName, 'Require');
-    
+
 }
 
-function Positive(target:any, propertyName:string){
+function Positive(target: any, propertyName: string) {
     flagInjector(target.constructor.name, propertyName, 'Positive');
-    
+
 }
 
-function MinLength(minlength:number){
-    return function(target:any, propertyName:string){
-        flagInjector(target.constructor.name, propertyName, {minLength: minlength.toString()})
+function MinLength(minlength: number) {
+    return function (target: any, propertyName: string) {
+        flagInjector(target.constructor.name, propertyName, { minLength: minlength.toString() })
     }
 }
 
 
-function Validate(obj:any){
+function Validate(obj: any) {
     console.log(validatorObject);
 
     let className = obj.constructor.name;
 
-    if(!validatorObject[className]){
+    if (!validatorObject[className]) {
         console.log('No validation requested on this class')
         return true;
     }
 
     let defaultReturn = true;
 
-    for(let objectProp in validatorObject[className]){
-        for(let validatorType of validatorObject[className][objectProp]){
-         
-                  
+    for (let objectProp in validatorObject[className]) {
+        for (let validatorType of validatorObject[className][objectProp]) {
 
-            switch(validatorType){
+
+
+            switch (validatorType) {
                 case 'Require':
-                    defaultReturn = defaultReturn && !!(obj[objectProp].trim());
-                break;
+                    defaultReturn = defaultReturn && !!(obj[objectProp].trim()); // !! converts a value into boolean basically a double negation
+                    break;
                 case 'Positive':
                     defaultReturn = defaultReturn && (obj[objectProp] > 0);
-                break;
+                    break;
             }
-            if(validatorType.hasOwnProperty('minLength')){
+            if (validatorType.hasOwnProperty('minLength')) {
                 defaultReturn = defaultReturn && (obj[objectProp].length > 3)
             }
         }
-            
+
     }
 
     return defaultReturn;
@@ -246,12 +246,12 @@ function Validate(obj:any){
 class Course {
     @Require
     @MinLength(5)
-    title:string;
+    title: string;
 
     @Positive
-    price:number;
+    price: number;
 
-    constructor(title:string, price:number){
+    constructor(title: string, price: number) {
         this.title = title;
         this.price = price;
     }
@@ -271,7 +271,7 @@ cSubBut.addEventListener('click', (event) => {
 
     let courseObject = new Course(courseTitle, coursePrice);
 
-    if(!Validate(courseObject)){
+    if (!Validate(courseObject)) {
         alert('Invalid Inputs');
     } else {
         console.log(courseObject);
