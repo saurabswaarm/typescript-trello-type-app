@@ -1,0 +1,17 @@
+1 - We fill the form and this generates
+    a Project object, which immediately 
+    afterwards gets added to the 
+    ProjectState
+
+2 - At the ProjectState the moment an
+    an object is received, it fires all
+    the listeners. Basically it listens 
+    for changes.
+
+3 - A listener is a function originating
+    from the ListSetup that takes the 
+    Project[], filters it for matching 
+    Project Objects and adds it to its
+    own collection. Once that is done it
+    hits renderItems(), which generates
+    the ProjectItem components.

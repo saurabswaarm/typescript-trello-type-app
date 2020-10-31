@@ -61,11 +61,23 @@ function NumRange(min, max) {
         });
     };
 }
+function Bind(target, key, propertyDescriptor) {
+    let originalFunction = propertyDescriptor.value;
+    return {
+        configurable: true,
+        enumerable: false,
+        get() {
+            return originalFunction.bind(this);
+        }
+    };
+}
 class Project {
     constructor(title, description, people) {
         this.title = title;
         this.description = description;
         this.people = people;
+        this.status = 'active';
+        this.id = 'id' + Math.trunc(Math.random() * 10000).toString();
     }
 }
 __decorate([
@@ -73,65 +85,195 @@ __decorate([
 ], Project.prototype, "title", void 0);
 __decorate([
     Require,
-    Length(2, 5)
+    Length(0, 100)
 ], Project.prototype, "description", void 0);
 __decorate([
     Require,
-    NumRange(5, 10)
+    NumRange(1, 10)
 ], Project.prototype, "people", void 0);
-class InputSetup {
+class State {
     constructor() {
-        this.divElement = document.getElementById('app');
-        this.formTemplate = document.getElementById('project-input');
-        this.formElement = document.importNode(this.formTemplate.content.firstElementChild, true);
-        this.formTitle = this.formElement.querySelector('#title');
-        this.formDescription = this.formElement.querySelector('#description');
-        this.formPeople = this.formElement.querySelector('#people');
-        this.prepForm();
-        this.injectForm();
+        this.listeners = [];
     }
-    prepForm() {
-        this.formElement.id = "user-input";
-        this.formElement.addEventListener('submit', (e) => {
-            e.preventDefault();
-            let obj = new Project(this.formTitle.value, this.formDescription.value, +this.formPeople.value);
-            if (!validate(obj)) {
-                alert('invalid values');
-            }
-            else {
-                console.log(obj);
-                this.clearFields();
-            }
-        });
+    addListener(func) {
+        this.listeners.push(func);
+    }
+}
+class ProjectState extends State {
+    constructor() {
+        super();
+        this.projects = [];
+    }
+    static getInstance() {
+        if (this.instance) {
+            return this.instance;
+        }
+        else {
+            this.instance = new ProjectState();
+            return this.instance;
+        }
+    }
+    addProject(project) {
+        this.projects.push(project);
+        this.fireListeners();
+    }
+    updateItem(itemId, status) {
+        let project = this.projects.find((proj) => proj.id == itemId);
+        if (project && project.status !== status) {
+            project.status = status;
+            this.fireListeners();
+        }
+    }
+    fireListeners() {
+        for (const listener of this.listeners) {
+            listener(this.projects);
+        }
+    }
+}
+class TemplateComponent {
+    constructor(hostId, templateId, insertAtStart, elementId) {
+        this.insertAtStart = insertAtStart;
+        this.elementId = elementId;
+        this.host = document.getElementById(hostId);
+        this.template = document.getElementById(templateId);
+        this.element = document.importNode(this.template.content.firstElementChild, true);
+        if (elementId) {
+            this.element.id = elementId;
+        }
+    }
+    attach() {
+        if (this.elementId && this.host.querySelector('#' + this.elementId)) {
+            return;
+        }
+        this.host.insertAdjacentElement(this.insertAtStart ? 'afterbegin' : 'beforeend', this.element);
+    }
+}
+class InputSetup extends TemplateComponent {
+    constructor(hostId, templateId, insertAtStart, elementId) {
+        super(hostId, templateId, insertAtStart, elementId);
+        this.formTitle = this.element.querySelector('#title');
+        this.formDescription = this.element.querySelector('#description');
+        this.formPeople = this.element.querySelector('#people');
+        this.configure();
+        this.attach();
+    }
+    configure() {
+        this.element.addEventListener('submit', this.submitHandler);
+    }
+    submitHandler(e) {
+        e.preventDefault();
+        let obj = new Project(this.formTitle.value, this.formDescription.value, +this.formPeople.value);
+        if (!validate(obj)) {
+            alert('invalid values');
+        }
+        else {
+            projState.addProject(obj);
+            this.clearFields();
+        }
     }
     clearFields() {
         this.formTitle.value = '';
         this.formDescription.value = '';
         this.formPeople.value = '';
     }
-    injectForm() {
-        this.divElement.append(this.formElement);
-    }
+    renderItems() { }
+    ;
 }
-class ListSetup {
-    constructor(type) {
-        this.type = type;
-        this.divElement = document.getElementById('app');
-        this.listTemplate = document.getElementById('project-list');
-        this.listElement = document.importNode(this.listTemplate.content.firstElementChild, true);
+__decorate([
+    Bind
+], InputSetup.prototype, "submitHandler", null);
+class ProjectItem extends TemplateComponent {
+    constructor(project, hostId) {
+        super(hostId, 'single-project', false, project.id);
+        this.project = project;
         this.configure();
-        this.attacht();
+        this.attach();
     }
     configure() {
-        this.listElement.id = `${this.type}-projects`;
-        this.listElement.querySelector('h2').innerText = `${this.type.toUpperCase()} PROJECTS`;
-        this.listElement.querySelector('ul').id = `${this.type}-projects-list`;
+        let title = document.createElement('h2');
+        title.innerText = this.project.title;
+        let description = document.createElement('p');
+        description.innerText = this.project.description;
+        let people = document.createElement('p');
+        people.innerText = this.project.people.toString();
+        this.element.append(title, description, people);
+        this.element.addEventListener('dragstart', this.dragStart);
+        this.element.addEventListener('dragend', this.dragEnd);
     }
-    attacht() {
-        this.divElement.insertAdjacentElement('beforeend', this.listElement);
+    renderItems() { }
+    dragStart(event) {
+        event.dataTransfer.setData('text/plain', this.project.id);
+        event.dataTransfer.effectAllowed = "move";
+        setTimeout(() => {
+            this.element.style.opacity = "0.1";
+        }, 50);
+    }
+    dragEnd(event) {
+        this.element.style.opacity = "1.0";
     }
 }
-let inp = new InputSetup();
-let activeList = new ListSetup('active');
-let finList = new ListSetup('finished');
+__decorate([
+    Bind
+], ProjectItem.prototype, "dragStart", null);
+__decorate([
+    Bind
+], ProjectItem.prototype, "dragEnd", null);
+class ListSetup extends TemplateComponent {
+    constructor(hostId, templateId, insertAtStart, type) {
+        super(hostId, templateId, insertAtStart);
+        this.type = type;
+        this.projectsList = [];
+        this.configure();
+        this.attach();
+    }
+    renderItems() {
+        console.log('render fired from' + this.type);
+        let target = document.getElementById(`${this.type}-projects-list`);
+        target.innerHTML = "";
+        for (const project of this.projectsList) {
+            let projCard = new ProjectItem(project, `${this.type}-projects-list`);
+        }
+    }
+    configure() {
+        this.element.id = `${this.type}-projects`;
+        this.element.querySelector('h2').innerText = `${this.type.toUpperCase()} PROJECTS`;
+        this.element.querySelector('ul').id = `${this.type}-projects-list`;
+        projState.addListener((proj) => {
+            this.projectsList = proj.filter((project) => {
+                return project.status == this.type;
+            });
+            this.renderItems();
+        });
+        this.element.addEventListener('dragover', this.dragOver);
+        this.element.addEventListener('dragleave', this.dragLeave);
+        this.element.addEventListener('drop', this.drop);
+    }
+    dragOver(event) {
+        event.preventDefault();
+        this.element.querySelector('ul').classList.add('droppable');
+    }
+    dragLeave(event) {
+        this.element.querySelector('ul').classList.remove('droppable');
+    }
+    drop(event) {
+        this.element.querySelector('ul').classList.remove('droppable');
+        if (event.dataTransfer.items[0]) {
+            let id = event.dataTransfer.getData('text/plain');
+            projState.updateItem(id, this.type);
+        }
+    }
+}
+__decorate([
+    Bind
+], ListSetup.prototype, "dragOver", null);
+__decorate([
+    Bind
+], ListSetup.prototype, "dragLeave", null);
+__decorate([
+    Bind
+], ListSetup.prototype, "drop", null);
+let projState = ProjectState.getInstance();
+let inp = new InputSetup('app', 'project-input', true, 'user-input');
+let activeList = new ListSetup('app', 'project-list', false, 'active');
+let finList = new ListSetup('app', 'project-list', false, 'finished');
 //# sourceMappingURL=app.js.map
