@@ -1,5 +1,7 @@
-namespace app {
-    type Listener<T> = (proj: T[]) => void; //declaring type for our listener function, with type arguments for what the listener functions process
+
+import {Project} from "../models/project.js";
+
+type Listener<T> = (proj: T[]) => void; //declaring type for our listener function, with type arguments for what the listener functions process
 
 abstract class State<T>{
     protected listeners: Listener<T>[] = [];
@@ -51,6 +53,4 @@ class ProjectState extends State<Project> {
 
 }
 
-export let projState = ProjectState.getInstance();
-
-}
+export default ProjectState.getInstance();

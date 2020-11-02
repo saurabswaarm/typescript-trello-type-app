@@ -1,6 +1,4 @@
-/// <reference path="../validator/validation-register.ts" />
-
-namespace app {
+import {setRegister} from "../validator/validation-register.js";
 
     export function Require(target: any, key: string) {
         setRegister(target, key, { type: 'required', status: true });
@@ -36,4 +34,3 @@ namespace app {
             }
         }
     }
-}

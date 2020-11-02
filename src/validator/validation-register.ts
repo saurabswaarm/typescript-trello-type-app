@@ -1,4 +1,3 @@
-namespace app {
     interface Validator {
         type: string;
         status?: boolean;
@@ -26,4 +25,3 @@ namespace app {
             [key]: existingflags ? [...existingflags, validator] : [validator]
         }
     }
-}

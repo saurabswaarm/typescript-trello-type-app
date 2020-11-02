@@ -1,4 +1,3 @@
-namespace app {
     export interface Draggable {
         dragStart(event: Event): void;
         dragEnd(event: Event): void;
@@ -9,7 +8,6 @@ namespace app {
         dragLeave(event: Event): void;
         drop(event: Event): void;
     }
-}
 
 //Drag and drop
 

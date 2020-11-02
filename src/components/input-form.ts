@@ -1,9 +1,9 @@
-/// <reference path="./base-component.ts" />
-/// <reference path="../decorators/decorators.ts" />
-/// <reference path="../validator/validator-function.ts" />
-/// <reference path="../models/project.ts" />
+import { TemplateComponent } from "./base-component.js" ;
+import { Bind } from "../decorators/decorators.js";
+import { Project } from "../models/project.js";
+import validate from "../validator/validator-function.js";
+import projState from "../statemanagement/stateman.js";
 
-namespace app {
     export class InputSetup extends TemplateComponent<HTMLFormElement, HTMLDivElement>{
 
         formTitle: HTMLInputElement;
@@ -46,4 +46,3 @@ namespace app {
     
         protected renderItems() { };
     }
-}

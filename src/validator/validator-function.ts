@@ -1,7 +1,6 @@
-/// <reference path="./validation-register.ts" />
-
-namespace app {
-    export function validate(object: any): boolean {
+    import {validationRegister} from "./validation-register.js";
+    
+    export default function validate(object: any): boolean {
         //lookup the class in the validation register
         //find all validations that need to be comitted
         //check all those validation
@@ -42,4 +41,3 @@ namespace app {
     
         return result;
     }
-}

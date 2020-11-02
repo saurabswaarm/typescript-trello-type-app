@@ -1,4 +1,5 @@
-namespace app {
+    import {Require, Length, NumRange }from "../decorators/decorators.js";
+
     export class Project {
         @Require
         title: string;
@@ -24,4 +25,3 @@ namespace app {
         }
     
     }
-}
