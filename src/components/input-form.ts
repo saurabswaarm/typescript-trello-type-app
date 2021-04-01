@@ -1,8 +1,8 @@
-import { TemplateComponent } from "./base-component.js" ;
-import { Bind } from "../decorators/decorators.js";
-import { Project } from "../models/project.js";
-import validate from "../validator/validator-function.js";
-import projState from "../statemanagement/stateman.js";
+import { TemplateComponent } from "./base-component" ;
+import { Bind } from "../decorators/decorators";
+import { Project } from "../models/project";
+import validate from "../validator/validator-function";
+import projState from "../statemanagement/stateman";
 
     export class InputSetup extends TemplateComponent<HTMLFormElement, HTMLDivElement>{
 

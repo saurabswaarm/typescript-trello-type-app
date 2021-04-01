@@ -1,7 +1,7 @@
-import { TemplateComponent } from "./base-component.js" ;
-import { Bind } from "../decorators/decorators.js";
-import { Project } from "../models/project.js";
-import {Draggable} from "../models/drag-models.js";
+import { TemplateComponent } from "./base-component" ;
+import { Bind } from "../decorators/decorators";
+import { Project } from "../models/project";
+import {Draggable} from "../models/drag-models";
 
 
 export class ProjectItem extends TemplateComponent<HTMLLIElement, HTMLUListElement> implements Draggable {

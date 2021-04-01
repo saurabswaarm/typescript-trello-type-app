@@ -1,4 +1,4 @@
-    import {Require, Length, NumRange }from "../decorators/decorators.js";
+    import {Require, Length, NumRange }from "../decorators/decorators";
 
     export class Project {
         @Require

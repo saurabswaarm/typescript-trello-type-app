@@ -1,9 +1,9 @@
-import { TemplateComponent } from "./base-component.js";
-import { ProjectItem } from "./project-item.js";
-import { Bind } from "../decorators/decorators.js";
-import { Project } from "../models/project.js";
-import {Dragarea} from "../models/drag-models.js";
-import projState from "../statemanagement/stateman.js";
+import { TemplateComponent } from "./base-component";
+import { ProjectItem } from "./project-item";
+import { Bind } from "../decorators/decorators";
+import { Project } from "../models/project";
+import {Dragarea} from "../models/drag-models";
+import projState from "../statemanagement/stateman";
 
 
 export class ListSetup extends TemplateComponent<HTMLElement, HTMLDivElement> implements Dragarea {

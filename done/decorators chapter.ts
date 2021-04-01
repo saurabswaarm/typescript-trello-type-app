@@ -172,7 +172,7 @@ type MinLengthX = {
 
 interface ValidatorObject {
     [relevantClass: string]: {
-        [propertyName: string]: (string | Partial<MinLengthX>)[]
+        [propertyName: string]: (string | MinLengthX)[]
     }
 }
 
@@ -209,7 +209,6 @@ function MinLength(minlength: number) {
 
 
 function Validate(obj: any) {
-    console.log(validatorObject);
 
     let className = obj.constructor.name;
 

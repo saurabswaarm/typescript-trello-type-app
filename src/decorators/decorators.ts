@@ -1,4 +1,4 @@
-import {setRegister} from "../validator/validation-register.js";
+import {setRegister} from "../validator/validation-register";
 
     export function Require(target: any, key: string) {
         setRegister(target, key, { type: 'required', status: true });

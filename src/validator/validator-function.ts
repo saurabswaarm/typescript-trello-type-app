@@ -1,5 +1,5 @@
-    import {validationRegister} from "./validation-register.js";
-    
+    import {validationRegister} from "./validation-register";
+
     export default function validate(object: any): boolean {
         //lookup the class in the validation register
         //find all validations that need to be comitted

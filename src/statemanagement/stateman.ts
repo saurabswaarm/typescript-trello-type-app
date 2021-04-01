@@ -1,5 +1,5 @@
 
-import {Project} from "../models/project.js";
+import {Project} from "../models/project";
 
 type Listener<T> = (proj: T[]) => void; //declaring type for our listener function, with type arguments for what the listener functions process
 
