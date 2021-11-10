@@ -1,54 +1,47 @@
-import { TemplateComponent } from "./base-component" ;
-import { Bind } from "../decorators/decorators";
-import { Project } from "../models/project";
-import {Draggable} from "../models/drag-models";
+import { Draggable } from '../models/drag-drop';
+import { Project } from '../models/project';
+import Component from './base-component';
+import { autobind } from '../decorators/autobind';
 
+// ProjectItem Class
+export class ProjectItem extends Component<HTMLUListElement, HTMLLIElement>
+  implements Draggable {
+  private project: Project;
 
-export class ProjectItem extends TemplateComponent<HTMLLIElement, HTMLUListElement> implements Draggable {
-
-    //How does this work?
-    //
-    //For each ProjectItem the host is the containing UL and Template is supplied from the index.html
-    //Once we build it and configure it we run attach that appends the ProjectItem to the host.
-
-
-    constructor(private project: Project, hostId: string) {
-        super(hostId, 'single-project', false, project.id)
-        this.configure();
-        this.attach();
+  get persons() {
+    if (this.project.people === 1) {
+      return '1 person';
+    } else {
+      return `${this.project.people} persons`;
     }
+  }
 
-    configure() {
-        let title = document.createElement('h2');
-        title.innerText = this.project.title;
+  constructor(hostId: string, project: Project) {
+    super('single-project', hostId, false, project.id);
+    this.project = project;
 
-        let description = document.createElement('p');
-        description.innerText = this.project.description;
+    this.configure();
+    this.renderContent();
+  }
 
-        let people = document.createElement('p');
-        people.innerText = this.project.people.toString();
+  @autobind
+  dragStartHandler(event: DragEvent) {
+    event.dataTransfer!.setData('text/plain', this.project.id);
+    event.dataTransfer!.effectAllowed = 'move';
+  }
 
-        this.element.append(title, description, people);
+  dragEndHandler(_: DragEvent) {
+    console.log('DragEnd');
+  }
 
-        //drag
-        this.element.addEventListener('dragstart', this.dragStart);
-        this.element.addEventListener('dragend', this.dragEnd);
-    }
+  configure() {
+    this.element.addEventListener('dragstart', this.dragStartHandler);
+    this.element.addEventListener('dragend', this.dragEndHandler);
+  }
 
-    renderItems() { }
-
-    @Bind
-    dragStart(event: DragEvent) {
-        event.dataTransfer!.setData('text/plain', this.project.id)
-        event.dataTransfer!.effectAllowed = "move";
-
-        setTimeout(()=>{
-            this.element.style.opacity = "0.1";
-        }, 50)
-    }
-
-    @Bind
-    dragEnd(event:DragEvent){
-        this.element.style.opacity = "1.0";
-    }
+  renderContent() {
+    this.element.querySelector('h2')!.textContent = this.project.title;
+    this.element.querySelector('h3')!.textContent = this.persons + ' assigned';
+    this.element.querySelector('p')!.textContent = this.project.description;
+  }
 }

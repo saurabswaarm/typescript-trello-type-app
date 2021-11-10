@@ -1,29 +1,42 @@
+// Component Base Class
 
+export const something = '...';
 
-export abstract class TemplateComponent<T extends HTMLElement, U extends HTMLElement> {
-    template: HTMLTemplateElement;
-    element: T;
-    host: U;
+export default abstract class Component<T extends HTMLElement, U extends HTMLElement> {
+  templateElement: HTMLTemplateElement;
+  hostElement: T;
+  element: U;
 
-    constructor(hostId: string, templateId: string, private insertAtStart: boolean, private elementId?: string,) {
-        this.host = <U>document.getElementById(hostId)!;
-        this.template = <HTMLTemplateElement>document.getElementById(templateId)!;
-        this.element = <T>document.importNode(this.template.content.firstElementChild!, true);
+  constructor(
+    templateId: string,
+    hostElementId: string,
+    insertAtStart: boolean,
+    newElementId?: string
+  ) {
+    this.templateElement = document.getElementById(
+      templateId
+    )! as HTMLTemplateElement;
+    this.hostElement = document.getElementById(hostElementId)! as T;
 
-        if (elementId) {
-            this.element.id = elementId;
-        }
-
+    const importedNode = document.importNode(
+      this.templateElement.content,
+      true
+    );
+    this.element = importedNode.firstElementChild as U;
+    if (newElementId) {
+      this.element.id = newElementId;
     }
 
-    protected attach() {
+    this.attach(insertAtStart);
+  }
 
-        this.host.insertAdjacentElement(
-            this.insertAtStart ? 'afterbegin' : 'beforeend',
-            this.element);
-    }
+  private attach(insertAtBeginning: boolean) {
+    this.hostElement.insertAdjacentElement(
+      insertAtBeginning ? 'afterbegin' : 'beforeend',
+      this.element
+    );
+  }
 
-    protected abstract configure(): void;
-    protected abstract renderItems(): void;
-
+  abstract configure(): void;
+  abstract renderContent(): void;
 }
